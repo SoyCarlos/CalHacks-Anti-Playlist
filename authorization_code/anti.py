@@ -7,7 +7,9 @@ import numpy as np
 from spotipy.oauth2 import SpotifyClientCredentials
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-import random
+import os
+from json.decoder import JSONDecodeError
+import json
 
 url = input("Paste Playlist URL\n")
 type(url)
@@ -20,17 +22,21 @@ id_end_index = playlist_info.find("?")
 
 playlist_id = playlist_info[:id_end_index]
 username = split_url[4]
-
-client_id = '70ce61b3518c4b68a9b583e1f9e971b4'
-client_secret = '36b26da39113479dac1f38743ada505f'
+key_file = "keys.json"
+keys = json.load(open(key_file))
+client_id = keys["client_id"]
+client_secret = keys["client_secret"]
 
 # client_credentials_manager = SpotifyClientCredentials(client_id, client_secret)
 # spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+try:
+    token = util.prompt_for_user_token(username, "playlist-modify-public", client_id, client_secret, redirect_uri='http://localhost/')
+except (AttributeError, JSONDecodeError):
+    os.remove(f".cache-{username}")
+    token = util.prompt_for_user_token(username, "playlist-modify-public", client_id, client_secret, redirect_uri='http://localhost/')
 
-token = util.prompt_for_user_token(username, scope="playlist-modify-public", client_id=client_id, client_secret=client_secret, redirect_uri='http://localhost/', cache_path=None)
-#token = generate_token()
 if token:
-	spotify = spotipy.Spotify(auth=token)
+	spotify = spotipy.Spotify(auth=token, requests_timeout=20)
 	results = spotify.user_playlist(username, playlist_id)
 	songs = results["tracks"]
 	# List of song ids 
@@ -41,6 +47,8 @@ if token:
 	genres = list()
 	# List of artist names
 	names = list()
+	# Dictionary of artists: genres
+	artistgenres = dict() 
 	# Dictionary of genres : list of anti-genres 
 	antis = dict() 
 	# Dictionary of ids : song names for the final playlist
@@ -69,15 +77,25 @@ if token:
 
     # Search for every artist's name and append the name to "genres"
 	for name in names: 
-		genre = spotify.search(name, limit = 1, type="artist")
-		genres.append(genre)
+		try:
+			genre = spotify.search(name, limit = 1, type="artist")
+			genres.append(genre)
+		except:
+			continue
 
    	# Find the actual genre of every item in genres 
 	for artist in genres:
     	# Remove the 0 to get a list of the artist's genres instead of just the first one 
 		artist_genres = artist.get("artists").get("items")[0].get('genres')
-		most_common_genre = np.random.choice(artist_genres).replace(" ", "").replace("-", "")
+		# i = 0
+		# while artist_genres == [] and i < len(artist.get("artists").get("items")):
+		# 	artist_genres = artist.get("artists").get("items")[i].get('genres')
+		# 	i+= 1
+		if artist_genres == []:
+			continue
+		most_common_genre = np.random.choice(artist_genres).replace(" ", "").replace("-", "").replace("+", "").replace("'", "").replace("&", "")
 		print(most_common_genre)
+
 		quote_page = 'http://everynoise.com/engenremap-'+ most_common_genre + '.html'
 		page = urlopen(quote_page)
 		soup = BeautifulSoup(page, 'html.parser')
@@ -88,7 +106,7 @@ if token:
 			for div in soup.findAll('div', attrs={'id':'mirror'}):
 				holder.extend(div.text.replace("»", "").strip().split("\n"))
 			antis[most_common_genre] = holder
-		curr_anti = np.random.choice(antis.get(most_common_genre)).replace(" ", "").replace("-", "").replace("+", "")
+		curr_anti = np.random.choice(antis.get(most_common_genre)).replace(" ", "").replace("-", "").replace("+", "").replace("'", "").replace("&", "")
 		#print(curr_anti)
 
 
@@ -106,7 +124,7 @@ if token:
 		anti_artistoo = anti_object.get("artists").get("items")
 		anti_artist_id = ""
 		while len(anti_artist_id) == 0:
-			curr_anti = np.random.choice(antis.get(most_common_genre)).replace(" ", "").replace("-", "").replace("+", "")
+			curr_anti = np.random.choice(antis.get(most_common_genre)).replace(" ", "").replace("-", "").replace("+", "").replace("'", "").replace("&", "")
 			#print(curr_anti)
 			quote_page = 'http://everynoise.com/engenremap-'+ curr_anti + '.html'
 			page = urlopen(quote_page)
@@ -117,12 +135,18 @@ if token:
 
 			selected_anti = np.random.choice(anti_artists)
 			#print(selected_anti)
-			anti_object = spotify.search(selected_anti, limit = 1, type="artist")
+			try:
+				anti_object = spotify.search(selected_anti, limit = 1, type="artist")
+			except:
+				continue
 			anti_artistoo = anti_object.get("artists").get("items")
 			for i in range(50):
 				if len(anti_artistoo) == 0: 
 					selected_anti = np.random.choice(anti_artists)
-					anti_object = spotify.search(selected_anti, limit = 1, type="artist")
+					try:
+						anti_object = spotify.search(selected_anti, limit = 1, type="artist")
+					except:
+						continue
 				else: 
 					anti_artist_id = anti_artistoo[0].get("id")
 					break
@@ -135,45 +159,31 @@ if token:
 		top10ids = list()
 		top10uris = list()
 		for song in top10.get("tracks"):
-			name = song.get("album").get('name')
-			songid = song.get("album").get("id")
-			songuri = song.get("album").get("uri")
-			if name in top10songs:
-				continue
-			else:
-				top10songs.append(name)
-				top10ids.append(songid)
-				top10uris.append(songuri)
+			name = song.get("name")#.get('name')
+			songid = song.get("id")#.get("id")
+			songuri = song.get("uri")#.get("uri")
+			#print(name, songid, songuri)
+			top10songs.append(name)
+			top10ids.append(songid)
+			top10uris.append(songuri)
 			#print(top10songs)
+		if len(top10songs) == 0:
+			continue
 		songindex = np.random.choice(len(top10songs))
-		final[top10songs[songindex]] = top10uris[songindex]
+		final[top10songs[songindex]] = top10ids[songindex]
 	print(final)
 	userid = input("What's your user id?\n")
 	newname = input("What's your playlist name?\n")
 	newplaylist = spotify.user_playlist_create(userid, newname)
-	#Take final.values, grab their ids (they're albums), and grab random songs from those albums. grab their ids and add those to playlist
-	#result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ",".join(list(final.values())))
-
-	add_tracks = []
-	for album in final.values():
-		current = spotify.album_tracks(album)
-		current_tracks = spotify.album_tracks(album)
-		random_index = random.randint(0, len(current_tracks['items']) - 1)
-		random_track = current_tracks['items'][random_index]['uri']
-		add_tracks.append(random_track)
-		
-
-	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), add_tracks)
-
+	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), list(final.values()))
 	print(result)
-
-
-
+	for filename in os.listdir("."):
+		if filename.startswith(".cache-"):
+			os.remove(filename)
 
 
 else:
     print("Can't get token for", username)
-
 
 
 
