@@ -1,0 +1,46 @@
+* {
+    background-color: 191414;
+    font-family: 'Jaldi', sans-serif;
+    color: 1DB954;
+}
+
+ul {
+    display: block;
+    list-style-type: none;
+    text-align: center;
+}
+
+li img {
+    padding-top: 1em;
+    height: 10%;
+}
+
+li p {
+    padding-top: 0%;
+    margin-top: 0%;
+    font-size: 3em;
+}
+
+input[type=text], select {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 0 auto;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: 0.8s;
+    color: white;
+}
+
+body {
+    text-align: center;
+}
+
+.form {
+    padding-top: 8%;
+}
+
+.form input:hover {
+    border: 3px dotted #1DB954;
+    width: 70%;
+}
