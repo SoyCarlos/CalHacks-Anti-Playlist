@@ -1,8 +1,19 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 from services.app import anti, spotipy_auth
+from celery import Celery
 
 app = Flask(__name__)
 app.secret_key = 'Im trying my best'
+
+app.config['CELERY_BROKER_URL'] = 'localhost:5000'
+app.config['CELERY_RESULT_BACKEND'] = 'localhost:5000'
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+@celery.task
+def authenticate():
+    return spotipy_auth(session['p_url'])
 
 @app.route('/')
 def index():
@@ -26,16 +37,17 @@ def redirect_url():
         user_id = user_uri.split('spotify:user:')[1]
         session['user_id'] = user_id
 
-    print("Authenticating")
-    session['token'] =  spotipy_auth(session['p_url'])
-    print("Authenticated")
-
+    session['token'] =  authenticate.delay()
     return render_template("redirect_uri.html")
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
     if request.method == 'POST':
         session['redirect_url'] = request.form['redirect']
+    
+    print("Authenticating")
+    print("Authenticated")
+    
     print('Playlist URL: ' + session['p_url'])
     print('User ID: ' + session['user_id'])
     print('Redirect: ' + session['redirect_url'])
@@ -49,3 +61,4 @@ def results():
 
 if __name__ == '__main__':
    app.run(debug = True)
+
