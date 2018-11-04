@@ -150,7 +150,11 @@ if token:
 	userid = input("What's your user id?\n")
 	newname = input("What's your playlist name?\n")
 	newplaylist = spotify.user_playlist_create(userid, newname)
-	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ",".join(list(final.values())))
+	#Take final.values, grab their ids (they're albums), and grab random songs from those albums. grab their ids and add those to playlist
+	#result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ",".join(list(final.values())))
+
+	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ['3YsZjJIR8rT6TY8KdCJSde'])
+
 	print(result)
 
 
