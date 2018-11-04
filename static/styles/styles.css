@@ -44,3 +44,15 @@ form input:hover {
     border: 3px dotted #1DB954;
     width: 70%;
 }
+
+.button {
+    background-color: black; /* Green */
+    border-color: white;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: help;
+}
