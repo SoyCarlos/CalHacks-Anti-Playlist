@@ -8,13 +8,13 @@
         <div class = "top_header">
             <ul>
                 <li>
-                        <img src="{{url_for('static', filename='Spotify_Icon_RGB_Green.png')}}" /><p>Anti-Playlist for Spotify</p>
+                    <img src="{{url_for('static', filename='Spotify_Icon_RGB_Green.png')}}" /><p>Anti-Playlist for Spotify</p>
                 </li>
             </ul>
         </div>
     </header>
     <body>
-        <form method="POST">
+        <form method="POST" action="{{ url_for('playlist_url')}}">
             <input type="text" id="playlist_url" name="playlist_url" placeholder="Spotify Playlist URL">
         </form>
     </body>
