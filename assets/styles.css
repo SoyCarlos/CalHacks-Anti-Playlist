@@ -36,11 +36,11 @@ body {
     text-align: center;
 }
 
-.form {
+form {
     padding-top: 8%;
 }
 
-.form input:hover {
+form input:hover {
     border: 3px dotted #1DB954;
     width: 70%;
 }
