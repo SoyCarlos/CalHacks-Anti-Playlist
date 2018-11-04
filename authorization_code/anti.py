@@ -7,6 +7,7 @@ import numpy as np
 from spotipy.oauth2 import SpotifyClientCredentials
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import random
 
 url = input("Paste Playlist URL\n")
 type(url)
@@ -153,10 +154,18 @@ if token:
 	#Take final.values, grab their ids (they're albums), and grab random songs from those albums. grab their ids and add those to playlist
 	#result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ",".join(list(final.values())))
 
-	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), ['3YsZjJIR8rT6TY8KdCJSde'])
+	add_tracks = []
+	for album in final.values():
+		current = spotify.album_tracks(album)
+		current_tracks = spotify.album_tracks(album)
+		random_index = random.randint(0, len(current_tracks['items']) - 1)
+		random_track = current_tracks['items'][random_index]['uri']
+		add_tracks.append(random_track)
+		
+
+	result = spotify.user_playlist_add_tracks(userid, newplaylist.get("id"), add_tracks)
 
 	print(result)
-
 
 
 
