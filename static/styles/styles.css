@@ -46,7 +46,8 @@ form input:hover {
 }
 
 .button {
-    background-color: black; /* Green */
+    background-color: 191414; /* Green */
+    border-style: solid;
     border-color: white;
     color: white;
     padding: 10px 25px;
@@ -54,5 +55,6 @@ form input:hover {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    cursor: help;
+    margin: 4px 2px;
+    cursor: pointer;
 }
