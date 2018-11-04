@@ -27,7 +27,7 @@ client_secret = '36b26da39113479dac1f38743ada505f'
 # client_credentials_manager = SpotifyClientCredentials(client_id, client_secret)
 # spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-token = util.prompt_for_user_token(username, scope="playlist-modify-public", client_id=client_id, client_secret=client_secret, redirect_uri='http://localhost/')
+token = util.prompt_for_user_token(username, scope="playlist-modify-public", client_id=client_id, client_secret=client_secret, redirect_uri='http://localhost/', cache_path=None)
 #token = generate_token()
 if token:
 	spotify = spotipy.Spotify(auth=token)
