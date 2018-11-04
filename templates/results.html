@@ -1,3 +1,46 @@
 <html>
-    HELLOW ORLD
+    <head>
+        <link rel= "stylesheet" type= "text/css" href= "../static/styles/styles.css">
+        <link href="https://fonts.googleapis.com/css?family=Jaldi" rel="stylesheet">
+        <script>
+                // Get the modal
+                var modal = document.getElementById('myModal');
+                
+                // Get the button that opens the modal
+                var btn = document.getElementById("myBtn");
+                
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+                
+                // When the user clicks the button, open the modal 
+                btn.onclick = function() {
+                    modal.style.display = "block";
+                }
+                
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+                
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+        </script>
+    </head>
+    
+    <header>
+        <div class = "top_header">
+            <ul>
+                <li>
+                    <img src="{{url_for('static', filename='Spotify_Icon_RGB_Green.png')}}" /><p>Anti-Playlist for Spotify</p>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <body>
+        <h3>Welcome to your anti-playlist</h3>
+    </body>
 </html>
