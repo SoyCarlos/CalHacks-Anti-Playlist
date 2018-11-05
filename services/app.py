@@ -13,7 +13,7 @@ import json
 
 from spotipy import oauth2
 
-def anti(playlist_url, user_id, token, playlist_name="125125125"):
+def anti(playlist_url, user_id, token, playlist_name="My Anti-Playlist"):
     url = playlist_url
 
     split_url = url.split("/")
