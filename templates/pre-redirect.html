@@ -41,11 +41,9 @@
         </div>
     </header>
     <body>
-        <form method="POST" action="{{ url_for('results')}}">
-            <input type="text" id="redirect" name="redirect" placeholder="Copy and Paste the URL you got redirected to."> <br>
+        <form method="POST" action="{{ url_for('redirect_url')}}">
+            <input type="button" id="user_uri" name="user_uri" value="Click me to authenticate"> <br>
         </form>
-        <button class="button button1" id="myBtn">Click here for help</button>
-
         <div id="myModal" class="modal">
 
                 <!-- Modal content -->
